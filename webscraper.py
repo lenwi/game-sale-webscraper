@@ -73,7 +73,6 @@ steamGame = scrapeSteam(searchTerm)
 
 games = []
 games.append(steamGame)
-games.append(steamGame)
 
 displayInfo(games)
 
