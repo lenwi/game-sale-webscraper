@@ -1,21 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
 
-steamUrl = 'https://store.steampowered.com/search/?term='
-winGameUrl = 'https://www.wingamestore.com/search/?SearchWord='
-GOGUrl = 'https://www.gog.com/games?search='
-humbleUrl = 'https://www.humblebundle.com/store/search?sort=bestselling&search='
+STEAM_URL = 'https://store.steampowered.com/search/?term='
+WINGAME_URL = 'https://www.wingamestore.com/search/?SearchWord='
+GOG_URL = 'https://www.gog.com/games?search='
+HUMBLE_URL = 'https://www.humblebundle.com/store/search?sort=bestselling&search='
 
 class GameDetails:
-    def __init__(game):
-        game.gameTitle = "No game found."
-        game.originalPrice = 0
-        game.discountedPrice = 0
-        game.discountPct = 0
-        game.store = "Store"
+    '''Game data object'''
+    def __init__(self):
+        self.gameTitle = "No game found."
+        self.originalPrice = 0
+        self.discountedPrice = 0
+        self.discountPct = 0
+        self.store = "Store"
 
 def scrapeSteam(searchTerm):
-    page = requests.get(steamUrl + searchTerm)
+    page = requests.get(STEAM_URL + searchTerm)
     soup = BeautifulSoup(page.content, 'html.parser')
     results = soup.find(id = "search_resultsRows")
 
@@ -75,4 +76,3 @@ games = []
 games.append(steamGame)
 
 displayInfo(games)
-
