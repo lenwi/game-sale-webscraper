@@ -24,66 +24,80 @@ class GameDetails:
         self.discountPct = 0
         self.store = "Store"
 
+def handleError(store):
+    failedGame =  GameDetails()
+    failedGame.store = store
+    failedGame.gameTitle = "DOWN"
+    return failedGame
+
 def scrapeSteam(searchTerm):
-    page = requests.get(STEAM_URL + searchTerm)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    results = soup.find(id = "search_resultsRows")
+    try:
+        page = requests.get(STEAM_URL + searchTerm)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        results = soup.find(id = "search_resultsRows")
 
-    steamGame = GameDetails()
-    steamGame.store = "Steam"
+        steamGame = GameDetails()
+        steamGame.store = "Steam"
 
-    if (results != None):
-        res = results.find_all("a")
-        steamGame.gameTitle = res[0].find("span", class_ = "title").string
+        if (results != None):
+            res = results.find_all("a")
+            steamGame.gameTitle = res[0].find("span", class_ = "title").string
 
-        priceDiv = res[0].find("div", class_ = "col search_price_discount_combined responsive_secondrow")
-        pctDiv = priceDiv.find("div", class_ = "col search_discount responsive_secondrow")
-        hasStrike = res[0].find("strike")
-        if (hasStrike):
-            steamGame.discountPct = pctDiv.find("span").string
-            steamGame.originalPrice = hasStrike.string.strip()
+            priceDiv = res[0].find("div", class_ = "col search_price_discount_combined responsive_secondrow")
+            pctDiv = priceDiv.find("div", class_ = "col search_discount responsive_secondrow")
+            hasStrike = res[0].find("strike")
+            if (hasStrike):
+                steamGame.discountPct = pctDiv.find("span").string
+                steamGame.originalPrice = hasStrike.string.strip()
 
-            discountDiv = res[0].find("div", class_ = "col search_price discounted responsive_secondrow")
-            discountDiv.span.extract()
-            discountDiv.br.extract()
-            steamGame.discountedPrice = discountDiv.text.strip()
-        else:
-            steamGame.originalPrice = res[0].find("div", class_ = "col search_price responsive_secondrow").string.strip()
-    
-    return steamGame
+                discountDiv = res[0].find("div", class_ = "col search_price discounted responsive_secondrow")
+                discountDiv.span.extract()
+                discountDiv.br.extract()
+                steamGame.discountedPrice = discountDiv.text.strip()
+            else:
+                steamGame.originalPrice = res[0].find("div", class_ = "col search_price responsive_secondrow").string.strip()
+        
+        return steamGame
+    except Exception as error:
+        print(error)
+        return handleError("Steam")
 
 def scrapegog(searchTerm):
-    # chromium headless webdriver to get js content
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--incognito")
-    options.add_argument("--log-level=3") # hides garbage from console
-    driver = webdriver.Chrome(options = options)
-    driver.get(GOG_URL + searchTerm)
+    try:
+        # chromium headless webdriver to get js content
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--incognito")
+        options.add_argument("--log-level=3") # hides garbage from console
+        driver = webdriver.Chrome(options = options)
+        driver.get(GOG_URL + searchTerm)
 
-    time.sleep(1) # basic async handling for now
+        time.sleep(1) # basic async handling for now
 
-    page = driver.page_source
-    soup = BeautifulSoup(page, 'html.parser')
+        page = driver.page_source
+        soup = BeautifulSoup(page, 'html.parser')
 
-    gogGame = GameDetails()
-    gogGame.store = "GOG"
+        gogGame = GameDetails()
+        gogGame.store = "GOG"
 
-    results = soup.find(class_ = "list-inner")
+        results = soup.find(class_ = "list-inner")
 
-    if (results != None):
-        res = results.find_all(class_ = "product-tile__content js-content")
-        gogGame.gameTitle = res[0].find(class_ = "product-tile__title").string
-        hasDiscount = res[0].find(class_ = "product-tile__discount")
+        if (results != None):
+            res = results.find_all(class_ = "product-tile__content js-content")
+            gogGame.gameTitle = res[0].find(class_ = "product-tile__title").string
+            hasDiscount = res[0].find(class_ = "product-tile__discount")
 
-        if (hasDiscount != None):
-            originalPrice = res[0].find(class_ = "product-tile__price _price").string
-            gogGame.originalPrice = "CDN$ " + str(originalPrice)
-            discountedPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
-            gogGame.discountedPrice = "CDN$ " + str(discountedPrice)
-            gogGame.discountPct = str(hasDiscount.string)
-        else:
-            originalPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
-            gogGame.originalPrice = "CDN$ " + str(originalPrice)
+            if (hasDiscount != None):
+                originalPrice = res[0].find(class_ = "product-tile__price _price").string
+                gogGame.originalPrice = "CDN$ " + str(originalPrice)
+                discountedPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
+                gogGame.discountedPrice = "CDN$ " + str(discountedPrice)
+                gogGame.discountPct = str(hasDiscount.string)
+            else:
+                originalPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
+                gogGame.originalPrice = "CDN$ " + str(originalPrice)
 
-    return gogGame
+        return gogGame
+    except Exception as error:
+        print(error)
+        return handleError("GOG")

@@ -6,6 +6,7 @@ def displayInfo(arr):
     ORIGINAL_PRICE = "{txt:^20}".format(txt = "Original Price")
     DISCOUNTED_PRICE = "{txt:^20}".format(txt = "Discounted Price")
     DISCOUNT_PERCENT = "{txt:^20}".format(txt = "Discount Percent")
+    print("\n\n")
     print(STORE, GAME_TITLE, ORIGINAL_PRICE, DISCOUNTED_PRICE, DISCOUNT_PERCENT, sep = "|")
     print("------------------------------------------------------------------------------------------------------------------------------------")
     print("------------------------------------------------------------------------------------------------------------------------------------")
