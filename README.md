@@ -2,7 +2,8 @@
 
 Web-scraper that notifies you of any discounted games across various reputable websites.
 
-bs4 for static sites, bs4 + selenium for js content
+bs4 for static sites, bs4 + selenium for js content \
+Install chromedriver and drop into project directory
 
 Current sites:
 Steam - https://store.steampowered.com/ \
