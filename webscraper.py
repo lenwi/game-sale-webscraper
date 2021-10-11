@@ -29,8 +29,10 @@ stringInput = input()
 searchTerm = stringInput.lower()
 
 steamGame = scrapeSteam(searchTerm)
+gogGame = scrapegog(searchTerm)
 
 games = []
 games.append(steamGame)
+games.append(gogGame)
 
 displayInfo(games)
