@@ -61,21 +61,29 @@ def scrapegog(searchTerm):
     driver = webdriver.Chrome(options = options)
     driver.get(GOG_URL + searchTerm)
 
-    gogGame = GameDetails()
-    gogGame.store = "GOG"
+    time.sleep(1) # basic async handling for now
 
     page = driver.page_source
     soup = BeautifulSoup(page, 'html.parser')
-    results = soup.find(class_ = "list-inner")
-    res = results.find_all(class_ = "product-tile__content js-content")
 
-    gogGame.gameTitle = res[0].find(class_ = "product-tile__title").string
-    originalPrice = res[0].find(class_ = "product-tile__price _price").string
-    gogGame.originalPrice = "CDN$ " + str(originalPrice)
-    discountedPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
-    gogGame.discountedPrice = "CDN$ " + str(discountedPrice)
-    gogGame.discountPct = str(res[0].find(class_ = "product-tile__discount").string)
+    gogGame = GameDetails()
+    gogGame.store = "GOG"
+
+    results = soup.find(class_ = "list-inner")
+
+    if (results != None):
+        res = results.find_all(class_ = "product-tile__content js-content")
+        gogGame.gameTitle = res[0].find(class_ = "product-tile__title").string
+        hasDiscount = res[0].find(class_ = "product-tile__discount")
+
+        if (hasDiscount != None):
+            originalPrice = res[0].find(class_ = "product-tile__price _price").string
+            gogGame.originalPrice = "CDN$ " + str(originalPrice)
+            discountedPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
+            gogGame.discountedPrice = "CDN$ " + str(discountedPrice)
+            gogGame.discountPct = str(hasDiscount.string)
+        else:
+            originalPrice = res[0].find(class_ = "product-tile__price-discounted _price").string
+            gogGame.originalPrice = "CDN$ " + str(originalPrice)
 
     return gogGame
-
-# scrapegog("children of mort")
