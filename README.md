@@ -8,5 +8,5 @@ Install chromedriver and drop into project directory
 Current sites:
 Steam - https://store.steampowered.com/ \
 Humble Bundle - https://www.humblebundle.com/ \
-WinGameStore - https://www.wingamestore.com/ \
+Fanatical - https://www.fanatical.com/en/ \
 GOG - https://www.gog.com/ 

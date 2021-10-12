@@ -31,9 +31,11 @@ searchTerm = stringInput.lower()
 
 steamGame = scrapeSteam(searchTerm)
 gogGame = scrapegog(searchTerm)
+fanaticalGame = scrapeFanatical(searchTerm)
 
 games = []
 games.append(steamGame)
 games.append(gogGame)
+games.append(fanaticalGame)
 
 displayInfo(games)
