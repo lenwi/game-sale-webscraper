@@ -24,18 +24,23 @@ def displayInfo(arr):
         print("------------------------------------------------------------------------------------------------------------------------------------")
     print("------------------------------------------------------------------------------------------------------------------------------------")
 
+def get_games():
+    steamGame = scrapeSteam(searchTerm)
+    gogGame = scrapegog(searchTerm)
+    fanaticalGame = scrapeFanatical(searchTerm)
+
+    games = []
+    games.append(steamGame)
+    games.append(gogGame)
+    games.append(fanaticalGame)
+
+    return games
+
 # Program start
 print("Enter the name of a game:")
 stringInput = input()
 searchTerm = stringInput.lower()
 
-steamGame = scrapeSteam(searchTerm)
-gogGame = scrapegog(searchTerm)
-fanaticalGame = scrapeFanatical(searchTerm)
-
-games = []
-games.append(steamGame)
-games.append(gogGame)
-games.append(fanaticalGame)
+games = get_games()
 
 displayInfo(games)
