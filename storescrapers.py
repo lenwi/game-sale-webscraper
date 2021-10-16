@@ -33,14 +33,17 @@ def handleError(store):
 def create_driver():
     # chromium headless webdriver to get js content
     options = Options()
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
+    options.add_argument(f'user-agent={user_agent}') # Bypass pages that don't allow headless
     options.add_argument("--headless")
     options.add_argument("--incognito")
-    options.add_argument("--log-level=3") # hides garbage from console
+    options.add_experimental_option('excludeSwitches', ['enable-logging']) # hides devlogs from console
     driver = webdriver.Chrome(options = options)
 
     return driver
 
 def scrapeSteam(searchTerm):
+    print("Checking Steam...")
     try:
         page = requests.get(STEAM_URL + searchTerm)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -67,12 +70,15 @@ def scrapeSteam(searchTerm):
             else:
                 steamGame.originalPrice = res[0].find("div", class_ = "col search_price responsive_secondrow").string.strip()
         
+        print("Done!")
+
         return steamGame
     except Exception as error:
         print(error)
         return handleError("Steam")
 
 def scrapegog(searchTerm):
+    print("Checking GOG...")
     try:
         driver = create_driver()
         driver.get(GOG_URL + searchTerm)
@@ -103,12 +109,15 @@ def scrapegog(searchTerm):
                 gogGame.originalPrice = "CDN$ " + str(originalPrice)
 
         driver.quit()
+        print("Done!")
+
         return gogGame
     except Exception as error:
         print(error)
         return handleError("GOG")
 
 def scrapeFanatical(searchTerm):
+    print("Checking Fanatical...")
     try:
         driver = create_driver()
         driver.get(FANATICAL_URL + searchTerm)
@@ -140,13 +149,48 @@ def scrapeFanatical(searchTerm):
                 fanaticalGame.originalPrice = "CDN$ " + str(originalPrice)[3:]
 
         driver.quit()
+        print("Done!")
+
         return fanaticalGame
     except Exception as error:
         print(error)
         return handleError("Fanatical")
 
-# game = scrapeFanatical("children of morta")
-# print(game.gameTitle)
-# print(game.originalPrice)
-# print(game.discountedPrice)
-# print(game.discountPct)
+def scrapeHumble(searchTerm):
+    print("Checking Humble Bundle...")
+    try:
+        driver = create_driver()
+        driver.get(HUMBLE_URL + searchTerm)
+
+        time.sleep(1)
+
+        page = driver.page_source
+        soup = BeautifulSoup(page, 'html.parser')
+
+        humbleGame = GameDetails()
+        humbleGame.store = "Humble Bundle"
+
+        results = soup.find(class_ = "entities-list js-entities-list no-style-list full js-full")
+
+        if (results != None and len(results.contents) >= 3):
+            res = results.find_all(class_ = "entity-block-container js-entity-container")
+            humbleGame.gameTitle = res[0].find(class_ = "entity-title").string
+            hasDiscount = res[0].find(class_ = "js-discount-amount discount-amount")
+
+            if (hasDiscount != None):
+                originalPrice = res[0].find(class_ = "breakdown-full-price").string
+                humbleGame.originalPrice = "CDN$ " + str(originalPrice)[3:]
+                discountedPrice = res[0].find(class_ = "store-discounted-price").string
+                humbleGame.discountedPrice = "CDN$ " + str(discountedPrice)[3:]
+                humbleGame.discountPct = str(hasDiscount.text)[:-4].strip()
+            else:
+                originalPrice = res[0].find(class_ = "price").string
+                humbleGame.originalPrice = "CDN$ " + str(originalPrice)[3:]
+
+        driver.quit()
+        print("Done!")
+        
+        return humbleGame
+    except Exception as error:
+        print(error)
+        return handleError("humbleGame")

@@ -6,7 +6,7 @@ def displayInfo(arr):
     ORIGINAL_PRICE = "{txt:^20}".format(txt = "Original Price")
     DISCOUNTED_PRICE = "{txt:^20}".format(txt = "Discounted Price")
     DISCOUNT_PERCENT = "{txt:^20}".format(txt = "Discount Percent")
-    print("\n\n")
+    print("\n")
     print(STORE, GAME_TITLE, ORIGINAL_PRICE, DISCOUNTED_PRICE, DISCOUNT_PERCENT, sep = "|")
     print("------------------------------------------------------------------------------------------------------------------------------------")
     print("------------------------------------------------------------------------------------------------------------------------------------")
@@ -28,18 +28,21 @@ def get_games():
     steamGame = scrapeSteam(searchTerm)
     gogGame = scrapegog(searchTerm)
     fanaticalGame = scrapeFanatical(searchTerm)
+    humbleGame = scrapeHumble(searchTerm)
 
     games = []
     games.append(steamGame)
     games.append(gogGame)
     games.append(fanaticalGame)
+    games.append(humbleGame)
 
     return games
 
 # Program start
-print("Enter the name of a game:")
+print("\n\nEnter the name of a game:")
 stringInput = input()
 searchTerm = stringInput.lower()
+print("\n")
 
 games = get_games()
 
