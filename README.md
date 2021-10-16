@@ -5,6 +5,8 @@ Web-scraper that notifies you of any discounted games across various reputable w
 bs4 for static sites, bs4 + selenium for js content \
 Install chromedriver and drop into project directory
 
+![Game Search Output Example](https://github.com/lenwi/game-sale-webscraper/blob/master/gamescraperoutput.PNG)
+
 Current sites:
 Steam - https://store.steampowered.com/ \
 Humble Bundle - https://www.humblebundle.com/ \
