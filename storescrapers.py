@@ -30,6 +30,16 @@ def handleError(store):
     failedGame.gameTitle = "DOWN"
     return failedGame
 
+def create_driver():
+    # chromium headless webdriver to get js content
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--incognito")
+    options.add_argument("--log-level=3") # hides garbage from console
+    driver = webdriver.Chrome(options = options)
+
+    return driver
+
 def scrapeSteam(searchTerm):
     try:
         page = requests.get(STEAM_URL + searchTerm)
@@ -64,12 +74,7 @@ def scrapeSteam(searchTerm):
 
 def scrapegog(searchTerm):
     try:
-        # chromium headless webdriver to get js content
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--incognito")
-        options.add_argument("--log-level=3") # hides garbage from console
-        driver = webdriver.Chrome(options = options)
+        driver = create_driver()
         driver.get(GOG_URL + searchTerm)
 
         time.sleep(1) # basic async handling for now
@@ -105,11 +110,7 @@ def scrapegog(searchTerm):
 
 def scrapeFanatical(searchTerm):
     try:
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--incognito")
-        options.add_argument("--log-level=3")
-        driver = webdriver.Chrome(options = options)
+        driver = create_driver()
         driver.get(FANATICAL_URL + searchTerm)
 
         time.sleep(1)
